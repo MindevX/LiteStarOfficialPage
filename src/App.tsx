@@ -34,7 +34,7 @@ function AppContent({
   maintenancement: boolean;
 }) {
   const location = useLocation();
-  const hideShell = location.pathname === "/news" || location.pathname === "/shop" || location.pathname === "/voucher";
+  const hideShell = location.pathname === "/news" || location.pathname === "/shop" || location.pathname === "/voucher" || location.pathname === "/map";
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-300">
