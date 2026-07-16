@@ -11,6 +11,7 @@ import Footer from "./components/Footer";
 import LogiCityDescription from "./pages/LogiCityDescription";
 import NewsDetail from "./pages/NewsDetail";
 import Store from "./pages/Store";
+import MapRotation from "./pages/MapRotation";
 import License from "./pages/License";
 import ServerMaintenancement from "./pages/ServerMaintenancement";
 import "./App.css";
@@ -18,6 +19,8 @@ import {servermaintenanacement} from "./config";
 import News from "./pages/news";
 import Shop from "./pages/shop";
 import Voucher from "./pages/voucher";
+import Map from "./pages/map";
+
 
 function AppContent({
   theme,
@@ -45,10 +48,12 @@ function AppContent({
               <Route path="/" element={<LogiCityDescription />} />
               <Route path="/newsdetail" element={<NewsDetail />} />
               <Route path="/store" element={<Store />} />
+              <Route path="/maprotation" element={<MapRotation />} />
               <Route path="/license" element={<License />} />
               <Route path="/news" element={<News />} />
               <Route path="/shop" element={<Shop />} />
               <Route path="/voucher" element={<Voucher />} />
+              <Route path="/map" element={<Map />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </>
           )}

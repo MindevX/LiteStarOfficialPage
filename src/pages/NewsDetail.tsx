@@ -47,9 +47,9 @@ const NewsDetail: React.FC = () => {
     selectedGame === "all"
       ? newsList
       : newsList.filter((item) =>
-          selectedGame === "LogiCity"
-            ? item.g === "LogiCity"
-            : item.g !== "LogiCity"
+          selectedGame === "LiteStars"
+            ? item.g === "LiteStars"
+            : item.g !== "LiteStars"
         );
 
   if (loading) {
@@ -69,7 +69,7 @@ const NewsDetail: React.FC = () => {
         <div className="max-w-4xl px-4 py-12 mx-auto sm:px-6 lg:px-8 animate-fade-in-up">
           {/* Back Button */}
         <Link
-          to="/news"
+          to="/newsdetail"
           className="inline-flex items-center gap-2 mb-8 text-sm font-bold text-slate-500 transition-colors hover:text-indigo-600 dark:text-slate-400 group"
         >
           <ArrowLeftIcon className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
@@ -81,7 +81,7 @@ const NewsDetail: React.FC = () => {
           <div className="p-10 text-white bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-800">
             <div className="flex items-center gap-3 mb-6">
               <span className="px-4 py-1.5 text-xs font-black tracking-widest uppercase rounded-full bg-white/20 backdrop-blur-md">
-                {newsItem.g === "nyangnyang" ? "냥냥식당타이쿤" : "GENERAL"}
+                {newsItem.g === "LiteStars" ? "LiteStars" : "GENERAL"}
               </span>
               <span className="flex items-center gap-1.5 text-xs font-medium opacity-80">
                 <CalendarIcon className="w-4 h-4" />
@@ -135,7 +135,7 @@ const NewsDetail: React.FC = () => {
       <div className="flex flex-wrap justify-center gap-3 mb-12">
         {[
           { id: "all", label: "전체 소식", color: "bg-indigo-600" },
-          { id: "LogiCity", label: "LogiCity", color: "bg-pink-600" },
+          { id: "LiteStars", label: "LiteStars", color: "bg-pink-600" },
           { id: "general", label: "공지사항", color: "bg-slate-800" },
         ].map((btn) => (
           <button
@@ -163,12 +163,12 @@ const NewsDetail: React.FC = () => {
             <div className="flex items-center justify-between mb-6">
               <span
                 className={`px-4 py-1 rounded-xl text-[10px] font-black tracking-widest uppercase ${
-                  item.g === "LogiCity"
+                  item.g === "LiteStars"
                     ? "bg-pink-50 text-pink-600 dark:bg-pink-900/20"
                     : "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20"
                 }`}
               >
-                {item.g === "LogiCity" ? "LogiCity" : "공지"}
+                {item.g === "LiteStars" ? "LiteStars" : "공지"}
               </span>
               <div className="flex items-center gap-1.5 text-xs font-mono text-slate-400">
                 <CalendarIcon className="w-3.5 h-3.5" />

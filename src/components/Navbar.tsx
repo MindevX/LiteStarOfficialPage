@@ -58,6 +58,7 @@ const Navbar: React.FC<NavbarProps> = ({ theme, setTheme, isSeasonal }) => {
     { name: "상점", path: "/store" },
     { name: "라이선스", path: "/license" },
     { name: "MinDevX", outpath: "https://mindevx.pages.dev/#/" },
+    { name: "맵 로테이션", path: "/maprotation" },
   ];
 
   // Close mobile menu on escape key press

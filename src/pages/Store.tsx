@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import rawStoreData from "../data/Shop.json";
 
 interface ShopItem {
   id: string;
@@ -33,38 +34,58 @@ const Store = () => {
   const [vouchers, setVouchers] = useState<voucherItem[]>([]);
   const [loadingVouchers, setLoadingVouchers] = useState(true);
   const [error, setError] = useState(false);
+  const searchParams = new URLSearchParams(window.location.search);
+  const id = searchParams.get("id");
 
   useEffect(() => {
-    fetch(`${process.env.PUBLIC_URL}/Shop.json`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (!data?.list) throw new Error("Invalid data");
-        setShops(data.list);
-      })
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
-  }, []);
+    setLoading(true);
+    const list = Array.isArray((rawStoreData as { list?: unknown[] }).list)
+      ? ((rawStoreData as { list: unknown[] }).list as unknown as ShopItem[])
+      : [];
+
+    setShops(list);
+
+    if (id) {
+      const item = list.find((item: ShopItem) => item.id === id);
+      if (item) {
+        setShops([item]);
+        setError(false);
+      } else {
+        setError(true);
+      }
+    } else {
+      setError(false);
+    }
+
+    setLoading(false);
+  }, [id]);
 
   useEffect(() => {
     fetch(`${process.env.PUBLIC_URL}/voucher.json`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (!data?.list) throw new Error("Invalid data");
-        setVouchers(data.list);
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("voucher.json not found");
+        }
+        return res.json();
       })
-      .catch(() => setError(true))
+      .then((data) => {
+        const voucherList = Array.isArray(data?.list)
+          ? (data.list as voucherItem[])
+          : [];
+        setVouchers(voucherList);
+      })
+      .catch(() => {
+        setVouchers([]);
+      })
       .finally(() => setLoadingVouchers(false));
   }, []);
 
   function givecodeShopItem(item: ShopItem) {
-    const id: string = item.id;
-    const targetVoucher = vouchers.find((v) => v.id === id);
+    const targetVoucher = vouchers.find((v) => v.id === item.id);
 
     if (targetVoucher) {
       const deepLink = "logicity://voucher/" + targetVoucher.voucher;
-
       window.location.href = deepLink;
-
       alert("앱이 자동으로 실행되지 않으면 설치후 시도해주세요");
     }
   }
@@ -106,7 +127,7 @@ const Store = () => {
           <div className="text-center p-8 bg-white rounded-xl shadow-md dark:bg-slate-900 dark:border dark:border-slate-700">
             <h2 className="text-2xl font-bold text-red-600 mb-2">😥 오류 발생</h2>
             <p className="text-slate-600 dark:text-slate-300">
-              상점 데이터를 불러오는 데 실패했습니다. 잠시 후 다시 시도해주세요.
+              요청한 상점 데이터를 찾을 수 없습니다. 잠시 후 다시 시도해주세요.
             </p>
           </div>
         </div>
@@ -122,9 +143,7 @@ const Store = () => {
             <h1 className="text-4xl md:text-6xl font-extrabold text-slate-800 mb-4 tracking-tight">
               LogiCity 상점
             </h1>
-            <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto">
-              
-            </p>
+            <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto"></p>
           </section>
         </div>
 
@@ -227,7 +246,6 @@ const Store = () => {
                     <div className="font-semibold text-slate-700 mb-2 text-sm">
                       주의: 현재 해당 시스템은 현재 클라이언트에 적용되지 않습니다. 다음 정기 업데이트 배포판이 필요합니다.
                     </div>
-
                   </div>
                 </div>
               </div>
@@ -248,7 +266,7 @@ const Store = () => {
         </div>
       </div>
     </main>
-  )
+  );
 };
 
 export default Store;

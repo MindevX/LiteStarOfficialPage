@@ -1,0 +1,63 @@
+{
+    "WildRoyale": [
+        {
+            "rotationIntervalMinutes": 360,
+            "Map": [
+                {
+                    "MapCode": "WildRoyale001",
+                    "SpecialEffects": [
+                        {
+
+                        }
+                    ]
+                },
+                {
+                    "MapCode": "WildRoyale002",
+                    "SpecialEffects": [
+                        {
+
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "PickGem": [
+        {
+            "rotationIntervalMinutes": 360,
+            "Map": [
+                {
+                    "MapCode": "PickGem001",
+                    "SpecialEffects": [
+                        {
+
+                        }
+                    ]
+                },
+                {
+                    "MapCode": "PickGem002",
+                    "SpecialEffects": [
+                        {
+
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "LiteIsland": [
+        {
+            "rotationIntervalMinutes": 1440,
+            "Map": [
+                {
+                    "MapCode": "LiteIsland",
+                    "SpecialEffects": [
+                        {
+
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

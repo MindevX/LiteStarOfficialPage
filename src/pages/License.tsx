@@ -29,13 +29,13 @@ const LicenseViewer: React.FC<{ item: LicenseItem }> = ({ item }) => {
           </h2>
         </div>
         <span className="inline-flex items-center rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-indigo-700 ring-1 ring-indigo-100 dark:bg-indigo-500/15 dark:text-indigo-200 dark:ring-indigo-500/10">
-          공개 문서
+          public document
         </span>
       </div>
 
       <div className="rounded-3xl border border-slate-200/70 bg-slate-50 p-5 text-sm leading-7 text-slate-700 shadow-sm dark:border-slate-800/70 dark:bg-slate-900 dark:text-slate-300">
         <pre className="whitespace-pre-wrap font-sans bg-transparent m-0">
-          {text || "라이선스 정보를 불러오는 중입니다..."}
+          {text || "Loading License Data..."}
         </pre>
       </div>
     </div>
@@ -48,6 +48,10 @@ const License: React.FC = () => {
       name: "Noto Sans KR",
       path: `${process.env.PUBLIC_URL}/license/font-kr.txt`,
     },
+    {
+      name: "Firebase",
+      path: `${process.env.PUBLIC_URL}/license/firebase.txt`,
+    }
   ];
 
   return (
@@ -59,11 +63,11 @@ const License: React.FC = () => {
               License Information
             </p>
             <h1 className="mt-4 text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-5xl">
-              프로젝트에서 사용하는 라이선스
+              Licenses used by the project
             </h1>
             <p className="mt-6 text-lg leading-8 text-slate-600 dark:text-slate-300">
-              이 페이지에서는 프로젝트에 포함된 주요 자산의 라이선스를 확인할 수 있습니다. 모든 라이선스는
-              투명하게 공개되며, 필요한 경우 자료를 자유롭게 참고하세요.
+              On this page, you can view the licenses for the key assets included in the project. All licenses are
+              transparently disclosed; please feel free to refer to the materials as needed.
             </p>
           </div>
         </div>

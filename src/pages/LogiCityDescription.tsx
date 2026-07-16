@@ -197,7 +197,7 @@ const LogiCityDescription = () => {
             <div className="relative z-10 flex flex-col items-center text-center">
             <div className="mb-6 text-7xl animate-float">🐾</div>
               <h1 className="mb-4 text-5xl font-black tracking-tighter text-transparent md:text-7xl bg-gradient-to-r from-rose-500 to-indigo-600 bg-clip-text">
-                LogiCity
+                LiteStar
               </h1>
               <p className="max-w-2xl mb-8 text-lg font-light leading-relaxed text-gray-500 md:text-xl dark:text-gray-400">
                 지원 예정 대상: android
@@ -230,7 +230,7 @@ const LogiCityDescription = () => {
               </div>
 
               <p className="mb-8 text-lg font-light leading-relaxed text-gray-600 dark:text-gray-400">
-                
+
               </p>
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -238,13 +238,13 @@ const LogiCityDescription = () => {
                   {
                     icon: "",
                     label: "",
-                    desc: "",
+                    desc: "LiteIsland와 관련된 다양한 이야기를 탐험하고 발견해내세요!",
                   },
-                  { icon: "", label: "", desc: "" },
+                  { icon: "", label: "", desc: "상대 Liter와 싸워서 승리를 얻으세요!" },
                   {
                     icon: "",
                     label: "",
-                    desc: "",
+                    desc: "MinDevX의 역대급 기술이 들어간 LiteStars를 플레이 하세요!",
                   },
                 ].map((item, i) => (
                   <div
