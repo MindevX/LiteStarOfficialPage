@@ -19,7 +19,8 @@
                         }
                     ]
                 }
-            ]
+            ],
+            "Tag": "General"
         }
     ],
     "PickGem": [
@@ -42,7 +43,8 @@
                         }
                     ]
                 }
-            ]
+            ],
+            "Tag": "General"
         }
     ],
     "LiteIsland": [
@@ -57,7 +59,8 @@
                         }
                     ]
                 }
-            ]
+            ],
+            "Tag": "General"
         }
     ]
 }
