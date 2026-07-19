@@ -204,7 +204,7 @@ const LogiCityDescription = () => {
               </p>
               <div className="flex flex-col justify-center w-full gap-4 sm:flex-row">
                 <a
-                  href="https://kjh12.itch.io/nyangrestauranttycoon"
+                  href="https://kjh12.itch.io/litestars"
                   className="inline-flex items-center justify-center gap-3 px-8 py-4 font-bold text-white transition-all duration-300 bg-indigo-600 shadow-lg shadow-indigo-500/20 dark:bg-indigo-500 rounded-2xl hover:bg-indigo-700 dark:hover:bg-indigo-600 hover:scale-105 active:scale-95"
                 >
                   <ArrowDownTrayIcon className="w-5 h-5" />
