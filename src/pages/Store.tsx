@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import rawStoreData from "../data/Shop.json";
+
+const apiBaseUrl = `${process.env.PUBLIC_URL || ""}/api`;
 
 interface ShopItem {
   id: string;
@@ -39,25 +40,38 @@ const Store = () => {
 
   useEffect(() => {
     setLoading(true);
-    const list = Array.isArray((rawStoreData as { list?: unknown[] }).list)
-      ? ((rawStoreData as { list: unknown[] }).list as unknown as ShopItem[])
-      : [];
 
-    setShops(list);
+    fetch(`${apiBaseUrl}/shop.json`)
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("shop.json not found");
+        }
+        return res.json();
+      })
+      .then((data) => {
+        const list = Array.isArray(data?.list)
+          ? (data.list as ShopItem[])
+          : [];
 
-    if (id) {
-      const item = list.find((item: ShopItem) => item.id === id);
-      if (item) {
-        setShops([item]);
-        setError(false);
-      } else {
+        setShops(list);
+
+        if (id) {
+          const item = list.find((item: ShopItem) => item.id === id);
+          if (item) {
+            setShops([item]);
+            setError(false);
+          } else {
+            setError(true);
+          }
+        } else {
+          setError(false);
+        }
+      })
+      .catch(() => {
+        setShops([]);
         setError(true);
-      }
-    } else {
-      setError(false);
-    }
-
-    setLoading(false);
+      })
+      .finally(() => setLoading(false));
   }, [id]);
 
   useEffect(() => {

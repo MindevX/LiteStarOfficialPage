@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
-import mapRotationData from "../data/MapRotation.json";
+
+const apiBaseUrl = `${process.env.PUBLIC_URL || ""}/api`;
 
 interface MapItem {
   MapCode: string;
@@ -15,17 +16,28 @@ type RotationData = Record<string, RotationSchedule[]>;
 
 const MapRotation = () => {
   const [now, setNow] = useState(() => new Date());
+  const [mapRotationData, setMapRotationData] = useState<RotationData>({});
 
   useEffect(() => {
     const timer = window.setInterval(() => {
       setNow(new Date());
     }, 1000);
 
+    fetch(`${apiBaseUrl}/map-rotation.json`)
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("map-rotation.json not found");
+        }
+        return res.json();
+      })
+      .then((data) => setMapRotationData(data as RotationData))
+      .catch(() => setMapRotationData({}));
+
     return () => window.clearInterval(timer);
   }, []);
 
   const sections = useMemo(() => {
-    return Object.entries(mapRotationData as RotationData).map(
+    return Object.entries(mapRotationData).map(
       ([category, schedules]) => ({
         category,
         schedules: schedules.map((schedule, index) => ({
@@ -35,7 +47,7 @@ const MapRotation = () => {
         })),
       })
     );
-  }, []);
+  }, [mapRotationData]);
 
   const utcTimeLabel = useMemo(() => {
     return now.toISOString().replace("T", " ").replace(".000Z", " UTC");

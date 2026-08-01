@@ -15,7 +15,8 @@ import {
   Coins,
   ArrowRight,
 } from "lucide-react";
-import rawNewsData from "../data/news.json";
+
+const apiBaseUrl = `${process.env.PUBLIC_URL || ""}/api`;
 
 
 interface NewsItem {
@@ -149,18 +150,26 @@ const LogiCityDescription = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-
     const startDate = new Date(2025, 0, 25);
     if (new Date() >= startDate) setShowProbability(true);
 
-    const list = rawNewsData.newsList;
-    
-    setNews(
-      list
-        .filter((n: NewsItem) => n.g === "LogiCity")
-        .slice(0, 5)
-    );
-    setLoading(false);
+    fetch(`${apiBaseUrl}/news.json`)
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("news.json not found");
+        }
+        return res.json();
+      })
+      .then((data) => {
+        const list = Array.isArray(data?.newsList) ? data.newsList : [];
+        setNews(
+          (list as NewsItem[])
+            .filter((n: NewsItem) => n.g === "LogiCity")
+            .slice(0, 5)
+        );
+      })
+      .catch(() => setNews([]))
+      .finally(() => setLoading(false));
   }, []);
 
   return (

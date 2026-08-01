@@ -6,7 +6,8 @@ import {
   NewspaperIcon,
   ChevronRightIcon,
 } from "@heroicons/react/24/solid";
-import rawNewsData from "../data/news.json";
+
+const apiBaseUrl = `${process.env.PUBLIC_URL || ""}/api`;
 
 interface NewsItem {
   id: number;
@@ -31,16 +32,31 @@ const NewsDetail: React.FC = () => {
 
   useEffect(() => {
     setLoading(true);
-    const list = rawNewsData.newsList;
-    setNewsList(list);
 
-    if (id) {
-      const item = list.find(
-        (item: NewsItem) => item.id === parseInt(id, 10)
-      );
-      item ? setNewsItem(item) : setError("News item not found");
-    }
-    setLoading(false);
+    fetch(`${apiBaseUrl}/news.json`)
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("news.json not found");
+        }
+        return res.json();
+      })
+      .then((data) => {
+        const list = Array.isArray(data?.newsList) ? data.newsList : [];
+        setNewsList(list as NewsItem[]);
+
+        if (id) {
+          const item = list.find(
+            (item: NewsItem) => item.id === parseInt(id, 10)
+          );
+          item ? setNewsItem(item) : setError("News item not found");
+        }
+      })
+      .catch(() => {
+        setNewsList([]);
+        setNewsItem(null);
+        setError("News data could not be loaded");
+      })
+      .finally(() => setLoading(false));
   }, [id]);
 
   const filteredNewsList =

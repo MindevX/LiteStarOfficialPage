@@ -15,11 +15,8 @@ import MapRotation from "./pages/MapRotation";
 import License from "./pages/License";
 import ServerMaintenancement from "./pages/ServerMaintenancement";
 import "./App.css";
+import NewsWebView from "./pages/LiteStars/WebView/News(WebView)";
 import {servermaintenanacement} from "./config";
-import News from "./pages/news";
-import Shop from "./pages/shop";
-import Voucher from "./pages/voucher";
-import Map from "./pages/map";
 
 
 function AppContent({
@@ -34,7 +31,7 @@ function AppContent({
   maintenancement: boolean;
 }) {
   const location = useLocation();
-  const hideShell = location.pathname === "/news" || location.pathname === "/shop" || location.pathname === "/voucher" || location.pathname === "/map";
+  const hideShell = location.pathname === "/LiteStars/webview/News" || location.pathname === "/shop" || location.pathname === "/voucher" || location.pathname === "/map";
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-300">
@@ -50,10 +47,7 @@ function AppContent({
               <Route path="/store" element={<Store />} />
               <Route path="/maprotation" element={<MapRotation />} />
               <Route path="/license" element={<License />} />
-              <Route path="/news" element={<News />} />
-              <Route path="/shop" element={<Shop />} />
-              <Route path="/voucher" element={<Voucher />} />
-              <Route path="/map" element={<Map />} />
+              <Route path="/LiteStars/webview/News" element={<NewsWebView />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </>
           )}
