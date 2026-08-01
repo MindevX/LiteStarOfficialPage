@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { useSearchParams, Link, useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import {
   ArrowLeftIcon,
   CalendarIcon,
   NewspaperIcon,
   ChevronRightIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/solid";
-import { Helmet } from 'react-helmet-async';
+import { Helmet } from "react-helmet-async";
+
+
 
 const apiBaseUrl = `${process.env.PUBLIC_URL || ""}/api`;
 
@@ -14,7 +17,7 @@ interface NewsItem {
   id: number;
   t: {
     ko: string;
-  };  
+  };
   c: {
     ko: string;
   };
@@ -85,13 +88,13 @@ const NewsWebView: React.FC = () => {
 
   function handleExit() {
     if (window.Unity) {
-        // "open_url:https://news.site.com" 메시지 전송
-        window.Unity.call("close");
+      window.Unity.call("close");
     } else {
-        window.open("https://litestar.pages.dev/", '_self');
+      window.open("https://litestar.pages.dev/", "_self");
     }
   }
 
+  // 1. 로딩 화면 (패딩 최적화)
   if (loading) {
     return (
       <>
@@ -101,17 +104,17 @@ const NewsWebView: React.FC = () => {
             content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
           />
         </Helmet>
-        <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.22),_transparent_40%),linear-gradient(135deg,_#020617_0%,_#0f172a_45%,_#111827_100%)] px-4 py-8 text-slate-100">
-          <div className="mx-auto flex min-h-[70vh] max-w-5xl flex-col items-center justify-center rounded-[2rem] border border-cyan-400/20 bg-slate-900/80 p-8 shadow-[0_0_0_1px_rgba(255,255,255,0.04),0_10px_30px_rgba(2,6,23,0.35)]">
-            <div className="mb-4 h-12 w-12 animate-spin rounded-full border-4 border-cyan-400/30 border-t-cyan-400"></div>
-            <p className="text-lg font-semibold text-slate-100">뉴스 데이터를 불러오는 중입니다</p>
-            <p className="mt-2 text-sm text-slate-400">잠시만 기다려 주세요.</p>
+        <main className="h-screen w-screen bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.22),_transparent_40%),linear-gradient(135deg,_#020617_0%,_#0f172a_45%,_#111827_100%)] p-4 text-slate-100 flex items-center justify-center">
+          <div className="flex flex-col items-center justify-center rounded-2xl border border-cyan-400/20 bg-slate-900/80 p-6 shadow-lg">
+            <div className="mb-3 h-10 w-10 animate-spin rounded-full border-4 border-cyan-400/30 border-t-cyan-400"></div>
+            <p className="text-base font-semibold text-slate-100">소식을 불러오는 중...</p>
           </div>
         </main>
       </>
     );
   }
 
+  // 2. 뉴스 상세 페이지
   if (id && newsItem) {
     return (
       <>
@@ -121,45 +124,48 @@ const NewsWebView: React.FC = () => {
             content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
           />
         </Helmet>
-        <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.22),_transparent_40%),linear-gradient(135deg,_#020617_0%,_#0f172a_45%,_#111827_100%)] px-3 py-4 text-slate-100 sm:px-4 sm:py-8">
-          <div className="mx-auto max-w-5xl px-1 py-2 sm:px-4 sm:py-4">
-            <div className="mb-6 flex flex-wrap items-center gap-3">
+        <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.22),_transparent_40%),linear-gradient(135deg,_#020617_0%,_#0f172a_45%,_#111827_100%)] px-3 py-3 text-slate-100">
+          <div className="mx-auto max-w-4xl">
+            {/* 상단 버튼 바 */}
+            <div className="mb-3 flex items-center justify-between">
               <button
                 onClick={handleBack}
-                className="inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-slate-900/80 px-4 py-2 text-sm font-black uppercase tracking-[0.2em] text-slate-200 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)] transition-all duration-150 hover:-translate-x-0.5 hover:border-cyan-300/60 hover:text-cyan-200"
+                className="inline-flex items-center gap-1.5 rounded-full border border-cyan-400/20 bg-slate-900/80 px-3 py-1.5 text-xs font-bold text-slate-200 transition-all active:scale-95"
               >
-                <ArrowLeftIcon className="h-4 w-4" />
-                {id ? "목록으로 돌아가기" : "뒤로 가기"}
+                <ArrowLeftIcon className="h-3.5 w-3.5" />
+                목록으로
+              </button>
+
+              <button
+                onClick={handleExit}
+                className="inline-flex items-center gap-1 rounded-full border border-rose-400/30 bg-rose-500/20 px-3 py-1.5 text-xs font-bold text-rose-200 active:scale-95"
+              >
+                <XMarkIcon className="h-3.5 w-3.5" />
+                닫기
               </button>
             </div>
 
-            <article className="overflow-hidden rounded-[2rem] border border-cyan-400/20 bg-slate-900/80 shadow-[0_0_0_1px_rgba(255,255,255,0.04),0_10px_30px_rgba(2,6,23,0.35)]">
-              <div className="bg-gradient-to-r from-fuchsia-500 via-indigo-500 to-cyan-400 p-8 sm:p-10">
-                <div className="mb-6 flex flex-wrap items-center gap-3">
-                  <span className="rounded-full border border-white/30 bg-white/20 px-3 py-1 text-[11px] font-black uppercase tracking-[0.25em] text-white/90">
+            <article className="overflow-hidden rounded-2xl border border-cyan-400/20 bg-slate-900/90 shadow-xl">
+              <div className="bg-gradient-to-r from-fuchsia-600 via-indigo-600 to-cyan-500 p-4 sm:p-6">
+                <div className="mb-2 flex items-center gap-2">
+                  <span className="rounded-full bg-black/30 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-white">
                     {newsItem.g === "LiteStars" ? "LiteStars" : "GENERAL"}
                   </span>
-                  <span className="flex items-center gap-2 rounded-full bg-slate-950/20 px-3 py-1 text-sm font-medium text-white/80">
-                    <CalendarIcon className="h-4 w-4" />
+                  <span className="flex items-center gap-1 text-xs text-white/90">
+                    <CalendarIcon className="h-3.5 w-3.5" />
                     {newsItem.d}
                   </span>
                 </div>
-                <h1 className="text-2xl font-black leading-tight tracking-tight text-white sm:text-4xl">
+                <h1 className="text-lg sm:text-2xl font-black leading-snug text-white">
                   {newsItem.t.ko}
                 </h1>
               </div>
 
-              <div className="p-5 sm:p-10">
-                <div className="rounded-[1.25rem] border border-cyan-400/20 bg-slate-950/60 p-4 shadow-[inset_0_0_20px_rgba(34,211,238,0.08)] sm:rounded-[1.5rem] sm:p-8">
-                  <p className="whitespace-pre-line text-[0.96rem] leading-[1.7] text-slate-300 sm:text-lg sm:leading-[1.9]">
+              <div className="p-4 sm:p-6">
+                <div className="rounded-xl border border-cyan-400/10 bg-slate-950/70 p-4">
+                  <p className="whitespace-pre-line text-sm sm:text-base leading-relaxed text-slate-200">
                     {newsItem.c.ko.replace(/\\n/g, "\n")}
                   </p>
-                </div>
-
-                <div className="mt-8 flex flex-wrap items-center gap-3 border-t border-white/10 pt-6 text-sm text-slate-500">
-                  <span>© MinDevX updates</span>
-                  <span className="h-1 w-1 rounded-full bg-slate-600"></span>
-                  <span>Official Announcement</span>
                 </div>
               </div>
             </article>
@@ -169,6 +175,7 @@ const NewsWebView: React.FC = () => {
     );
   }
 
+  // 3. 뉴스 리스트 메인 페이지
   return (
     <>
       <Helmet>
@@ -177,42 +184,43 @@ const NewsWebView: React.FC = () => {
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
         />
       </Helmet>
-      <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.22),_transparent_40%),linear-gradient(135deg,_#020617_0%,_#0f172a_45%,_#111827_100%)] px-4 py-8 text-slate-100">
-        <div className="mx-auto max-w-6xl px-2 py-4 sm:px-4">
-          <div className="mb-6 flex justify-end">
+      <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.22),_transparent_40%),linear-gradient(135deg,_#020617_0%,_#0f172a_45%,_#111827_100%)] px-3 py-3 text-slate-100">
+        <div className="mx-auto max-w-5xl">
+          {/* 상단 나가기 버튼 전용 바 */}
+          <div className="mb-2 flex justify-end">
             <button
               onClick={handleExit}
-              className="rounded-full border border-rose-400/30 bg-rose-500/10 px-4 py-2 text-sm font-semibold text-rose-200 transition-all duration-300 hover:-translate-y-0.5 hover:bg-rose-500/20"
+              className="inline-flex items-center gap-1 rounded-full border border-rose-400/30 bg-rose-500/20 px-3 py-1 text-xs font-bold text-rose-200 transition-all active:scale-95"
             >
+              <XMarkIcon className="h-3.5 w-3.5" />
               나가기
             </button>
           </div>
 
-          <div className="mb-8 rounded-[1.5rem] border border-cyan-400/20 bg-slate-900/80 p-6 text-center shadow-[0_0_0_1px_rgba(255,255,255,0.04),0_10px_30px_rgba(2,6,23,0.35)] sm:mb-10 sm:rounded-[2rem] sm:p-10">
-            <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-indigo-500 via-fuchsia-500 to-cyan-400 shadow-lg shadow-indigo-500/20 sm:mb-6 sm:h-16 sm:w-16">
-              <NewspaperIcon className="h-7 w-7 text-white sm:h-8 sm:w-8" />
+          {/* 헤더 섹션 (높이 및 여백 축소) */}
+          <div className="mb-4 rounded-2xl border border-cyan-400/20 bg-slate-900/80 p-4 text-center shadow-lg">
+            <div className="mb-2 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-500 to-cyan-400 shadow-md">
+              <NewspaperIcon className="h-5 w-5 text-white" />
             </div>
-            <h1 className="mb-3 text-3xl font-black tracking-tight text-white sm:text-5xl">
+            <h1 className="text-xl sm:text-3xl font-black tracking-tight text-white">
               News & <span className="text-indigo-300">Updates</span>
             </h1>
-            <p className="mx-auto max-w-2xl text-sm leading-6 text-slate-400 sm:text-lg sm:leading-7">
-              실시간 공지와 업데이트를 한눈에 확인해 보세요.
-            </p>
           </div>
 
-          <div className="mb-8 flex flex-wrap justify-center gap-2 sm:gap-3">
+          {/* 카테고리 필터 버튼 */}
+          <div className="mb-4 flex flex-wrap justify-center gap-1.5">
             {[
-              { id: "all", label: "전체 소식", color: "bg-indigo-500" },
-              { id: "LiteStars", label: "LiteStars", color: "bg-fuchsia-500" },
+              { id: "all", label: "전체 소식", color: "bg-indigo-600" },
+              { id: "LiteStars", label: "LiteStars", color: "bg-fuchsia-600" },
               { id: "general", label: "공지사항", color: "bg-slate-700" },
             ].map((btn) => (
               <button
                 key={btn.id}
                 onClick={() => setSelectedGame(btn.id)}
-                className={`rounded-full border px-4 py-2 text-xs font-black uppercase tracking-[0.2em] transition-[background-color,border-color,color,transform] duration-100 active:scale-95 sm:px-5 sm:py-2.5 sm:text-sm ${
+                className={`rounded-full border px-3 py-1.5 text-xs font-bold transition-all active:scale-95 ${
                   selectedGame === btn.id
-                    ? `${btn.color} text-white shadow-md shadow-black/20`
-                    : "border-cyan-400/20 bg-slate-900/70 text-slate-300 hover:border-cyan-300/40 hover:bg-slate-800 hover:text-cyan-200 active:bg-slate-700"
+                    ? `${btn.color} text-white border-transparent shadow`
+                    : "border-cyan-400/20 bg-slate-900/70 text-slate-300 active:bg-slate-800"
                 }`}
               >
                 {btn.label}
@@ -220,46 +228,47 @@ const NewsWebView: React.FC = () => {
             ))}
           </div>
 
-          <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-3 xl:grid-cols-4">
+          {/* 뉴스 카드 그리드 (모바일 1열 / 태블릿 이상 2~3열) */}
+          <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
             {filteredNewsList.map((item) => (
               <Link
                 key={item.id}
                 to={`/LiteStars/webview/News?id=${item.id}`}
-                className="group relative flex aspect-[4/3] flex-col justify-between overflow-hidden rounded-[1rem] border border-cyan-400/20 bg-slate-900/80 p-3 shadow-[0_0_0_1px_rgba(255,255,255,0.04),0_6px_14px_rgba(2,6,23,0.18)] transition-[transform,border-color,box-shadow] duration-100 hover:-translate-y-0.5 hover:border-cyan-300/40 sm:rounded-[1.2rem] sm:p-4"
+                className="group relative flex flex-col justify-between rounded-xl border border-cyan-400/20 bg-slate-900/80 p-3.5 shadow transition-all active:scale-[0.98]"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-fuchsia-500/10 opacity-0 transition-opacity duration-100 group-hover:opacity-100"></div>
-                <div className="relative flex items-start justify-between gap-2">
-                  <span
-                    className={`rounded-full px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.2em] ${
-                      item.g === "LiteStars"
-                        ? "bg-fuchsia-500/15 text-fuchsia-300"
-                        : "bg-indigo-500/15 text-indigo-300"
-                    }`}
-                  >
-                    {item.g === "LiteStars" ? "LiteStars" : "공지"}
-                  </span>
-                  <div className="flex items-center gap-1 text-[10px] font-medium text-slate-400">
-                    <CalendarIcon className="h-3 w-3" />
-                    {item.d}
+                <div>
+                  <div className="mb-2 flex items-center justify-between">
+                    <span
+                      className={`rounded-md px-2 py-0.5 text-[10px] font-bold ${
+                        item.g === "LiteStars"
+                          ? "bg-fuchsia-500/20 text-fuchsia-300"
+                          : "bg-indigo-500/20 text-indigo-300"
+                      }`}
+                    >
+                      {item.g === "LiteStars" ? "LiteStars" : "공지"}
+                    </span>
+                    <span className="flex items-center gap-1 text-[11px] text-slate-400">
+                      <CalendarIcon className="h-3 w-3" />
+                      {item.d}
+                    </span>
                   </div>
-                </div>
 
-                <div className="relative min-h-0">
-                  <h3 className="line-clamp-3 text-[0.9rem] font-semibold leading-tight text-white transition-colors group-hover:text-indigo-200 sm:text-[1rem]">
+                  <h3 className="line-clamp-2 text-sm font-bold leading-snug text-white group-hover:text-indigo-300">
                     {item.t.ko}
                   </h3>
                 </div>
 
-                <div className="relative flex items-center justify-end text-sm font-bold text-indigo-300">
-                  <ChevronRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                <div className="mt-3 flex items-center justify-end text-xs font-bold text-indigo-400">
+                  <span>자세히 보기</span>
+                  <ChevronRightIcon className="h-3.5 w-3.5 ml-0.5" />
                 </div>
               </Link>
             ))}
           </div>
 
           {filteredNewsList.length === 0 && (
-            <div className="mt-8 rounded-[1.5rem] border border-cyan-400/20 bg-slate-900/70 py-16 text-center shadow-[0_0_0_1px_rgba(255,255,255,0.04),0_8px_18px_rgba(2,6,23,0.2)]">
-              <p className="text-slate-400">해당 카테고리에 등록된 뉴스가 없습니다.</p>
+            <div className="mt-4 rounded-xl border border-cyan-400/20 bg-slate-900/70 py-10 text-center">
+              <p className="text-xs text-slate-400">등록된 뉴스가 없습니다.</p>
             </div>
           )}
         </div>
