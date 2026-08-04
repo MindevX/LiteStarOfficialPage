@@ -1,0 +1,55 @@
+{
+  "WildRoyale": [
+    {
+      "id": 1,
+      "from": "2026-08-04T00:00:00Z",
+      "end": "null", 
+      "rotationIntervalMinutes": 360,
+      "Map": [
+        {
+          "MapCode": "WildRoyale001",
+          "SpecialEffects": [{}]
+        },
+        {
+          "MapCode": "WildRoyale002",
+          "SpecialEffects": [{}]
+        }
+      ],
+      "Tag": "General"
+    }
+  ],
+  "PickGem": [
+    {
+      "id": 2,
+      "from": "2026-08-04T00:00:00Z",
+      "end": "null", 
+      "rotationIntervalMinutes": 360,
+      "Map": [
+        {
+          "MapCode": "PickGem001",
+          "SpecialEffects": [{}]
+        },
+        {
+          "MapCode": "PickGem002",
+          "SpecialEffects": [{}]
+        }
+      ],
+      "Tag": "General"
+    }
+  ],
+  "LiteIsland": [
+    {
+      "id": 3,
+      "from": "2026-08-04T00:00:00Z",
+      "end": "null", 
+      "rotationIntervalMinutes": 1440,
+      "Map": [
+        {
+          "MapCode": "LiteIsland",
+          "SpecialEffects": [{}]
+        }
+      ],
+      "Tag": "General"
+    }
+  ]
+}
