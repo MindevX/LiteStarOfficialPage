@@ -4,7 +4,8 @@
       "appversion": "0.1.0",
       "rotaionversion": "1.0",
       "balanceversion": "0.1.0",
-      "shopversion": "0.1.0"
+      "shopversion": "0.1.0",
+      "eventversion": "0.1.0"
     }
   ]
 }
