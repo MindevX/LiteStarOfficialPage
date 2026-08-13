@@ -5,7 +5,6 @@ import {
   CalendarIcon,
   NewspaperIcon,
   ChevronRightIcon,
-  XMarkIcon,
 } from "@heroicons/react/24/solid";
 
 const apiBaseUrl = `${process.env.PUBLIC_URL || ""}/api`;
