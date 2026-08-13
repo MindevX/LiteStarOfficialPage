@@ -25,6 +25,76 @@ interface NewsItem {
   g: string;
 }
 
+interface ParsedContent {
+  type: 'text' | 'bold' | 'li' | 'part' | 'newline';
+  content?: string;
+  label?: string;
+}
+
+const parseContentWithTags = (text: string): ParsedContent[] => {
+  const result: ParsedContent[] = [];
+  let remaining = text;
+
+  while (remaining.length > 0) {
+    const boldMatch = remaining.match(/^<bold>(.*?)<\/bold>/);
+    if (boldMatch) {
+      result.push({ type: 'bold', content: boldMatch[1] });
+      remaining = remaining.slice(boldMatch[0].length);
+      continue;
+    }
+
+    const liMatch = remaining.match(/^<li>(.*?)<\/li>/);
+    if (liMatch) {
+      result.push({ type: 'li', content: liMatch[1] });
+      remaining = remaining.slice(liMatch[0].length);
+      continue;
+    }
+
+    const partMatch = remaining.match(/^<part='([^']+)'>([^]*?)<\/part>/);
+    if (partMatch) {
+      result.push({ type: 'part', label: partMatch[1], content: partMatch[2] });
+      remaining = remaining.slice(partMatch[0].length);
+      continue;
+    }
+
+    const newlineMatch = remaining.match(/^\n/);
+    if (newlineMatch) {
+      result.push({ type: 'newline' });
+      remaining = remaining.slice(1);
+      continue;
+    }
+
+    const unclosedTagStart = remaining.match(/^<(?:bold|li|part=)/);
+    if (unclosedTagStart) {
+      const fallbackEnd = remaining.search(/\n|<li>|<bold>|<part='|$|<\/part>/);
+      const fallbackText = fallbackEnd === -1 ? remaining : remaining.slice(0, fallbackEnd);
+      if (fallbackText.length > 0) {
+        result.push({ type: 'text', content: fallbackText });
+      }
+      remaining = fallbackEnd === -1 ? '' : remaining.slice(fallbackEnd);
+      continue;
+    }
+
+    const nextTagIndex = remaining.search(/(<bold>|<li>|<part='|\n)/);
+    if (nextTagIndex === -1) {
+      result.push({ type: 'text', content: remaining });
+      break;
+    }
+
+    if (nextTagIndex === 0) {
+      result.push({ type: 'text', content: remaining.slice(0, 1) });
+      remaining = remaining.slice(1);
+      continue;
+    }
+
+    result.push({ type: 'text', content: remaining.slice(0, nextTagIndex) });
+    remaining = remaining.slice(nextTagIndex);
+  }
+
+  return result;
+};
+
+
 const NewsWebView: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -34,6 +104,17 @@ const NewsWebView: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [, setError] = useState<string | null>(null);
   const [selectedGame, setSelectedGame] = useState<string>("all");
+  const [expandedParts, setExpandedParts] = useState<Set<number>>(new Set());
+
+  const togglePart = (idx: number) => {
+    const newExpanded = new Set(expandedParts);
+    if (newExpanded.has(idx)) {
+      newExpanded.delete(idx);
+    } else {
+      newExpanded.add(idx);
+    }
+    setExpandedParts(newExpanded);
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -116,6 +197,56 @@ const NewsWebView: React.FC = () => {
 
   // 2. 뉴스 상세 페이지
   if (id && newsItem) {
+    const parsedContent = parseContentWithTags(newsItem.c.ko.replace(/\\n/g, "\n"));
+
+    const renderContent = () => {
+      const renderItem = (item: ParsedContent, idx: number): React.ReactNode => {
+        if (item.type === 'text') {
+          return <span key={idx}>{item.content}</span>;
+        }
+        if (item.type === 'bold') {
+          return <strong key={idx} className="font-bold text-white">{item.content}</strong>;
+        }
+        if (item.type === 'li') {
+          const innerContent = parseContentWithTags(item.content || '');
+          return (
+            <div key={idx} className="flex gap-2 ml-4">
+              <span className="text-indigo-300">•</span>
+              <div className="flex-1">
+                {innerContent.map((innerItem, innerIdx) => renderItem(innerItem, `${idx}-${innerIdx}` as unknown as number))}
+              </div>
+            </div>
+          );
+        }
+        if (item.type === 'part') {
+          const isExpanded = expandedParts.has(idx);
+          const innerContent = parseContentWithTags(item.content || '');
+          return (
+            <div key={idx} className="mb-3 rounded-md bg-slate-800/40 border border-indigo-500/20 overflow-hidden">
+              <button
+                onClick={() => togglePart(idx)}
+                className="w-full flex items-center justify-between px-3 py-2 text-indigo-300 hover:bg-indigo-500/10 transition-colors text-sm font-semibold"
+              >
+                <span>{item.label}</span>
+                <ChevronRightIcon className={`h-4 w-4 transition-transform duration-300 ${isExpanded ? 'rotate-90' : ''}`} />
+              </button>
+              {isExpanded && (
+                <div className="border-t border-indigo-500/20 px-3 py-2 bg-slate-900/40 animate-in fade-in space-y-2">
+                  {innerContent.map((innerItem, innerIdx) => renderItem(innerItem, innerIdx))}
+                </div>
+              )}
+            </div>
+          );
+        }
+        if (item.type === 'newline') {
+          return <br key={idx} />;
+        }
+        return null;
+      };
+
+      return parsedContent.map((item, idx) => renderItem(item, idx));
+    };
+
     return (
       <>
         <Helmet>
@@ -162,14 +293,16 @@ const NewsWebView: React.FC = () => {
               </div>
 
               <div className="p-4 sm:p-6">
-                <div className="rounded-xl border border-cyan-400/10 bg-slate-950/70 p-4">
-                  <p className="whitespace-pre-line text-sm sm:text-base leading-relaxed text-slate-200">
-                    {newsItem.c.ko.replace(/\\n/g, "\n")}
-                  </p>
+                <div className="rounded-xl border border-cyan-400/10 bg-slate-950/70 p-4 space-y-2">
+                  <div className="whitespace-pre-line text-sm sm:text-base leading-relaxed text-slate-200 space-y-2">
+                    {renderContent()}
+                  </div>
                 </div>
               </div>
             </article>
           </div>
+
+          {/* Part 모달 */}
         </main>
       </>
     );

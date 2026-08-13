@@ -5,6 +5,7 @@ import {
   CalendarIcon,
   NewspaperIcon,
   ChevronRightIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/solid";
 
 const apiBaseUrl = `${process.env.PUBLIC_URL || ""}/api`;
@@ -21,6 +22,75 @@ interface NewsItem {
   g: string;
 }
 
+interface ParsedContent {
+  type: 'text' | 'bold' | 'li' | 'part' | 'newline';
+  content?: string;
+  label?: string;
+}
+
+const parseContentWithTags = (text: string): ParsedContent[] => {
+  const result: ParsedContent[] = [];
+  let remaining = text;
+
+  while (remaining.length > 0) {
+    const boldMatch = remaining.match(/^<bold>(.*?)<\/bold>/);
+    if (boldMatch) {
+      result.push({ type: 'bold', content: boldMatch[1] });
+      remaining = remaining.slice(boldMatch[0].length);
+      continue;
+    }
+
+    const liMatch = remaining.match(/^<li>(.*?)<\/li>/);
+    if (liMatch) {
+      result.push({ type: 'li', content: liMatch[1] });
+      remaining = remaining.slice(liMatch[0].length);
+      continue;
+    }
+
+    const partMatch = remaining.match(/^<part='([^']+)'>([^]*?)<\/part>/);
+    if (partMatch) {
+      result.push({ type: 'part', label: partMatch[1], content: partMatch[2] });
+      remaining = remaining.slice(partMatch[0].length);
+      continue;
+    }
+
+    const newlineMatch = remaining.match(/^\n/);
+    if (newlineMatch) {
+      result.push({ type: 'newline' });
+      remaining = remaining.slice(1);
+      continue;
+    }
+
+    const unclosedTagStart = remaining.match(/^<(?:bold|li|part=)/);
+    if (unclosedTagStart) {
+      const fallbackEnd = remaining.search(/\n|<li>|<bold>|<part='|$|<\/part>/);
+      const fallbackText = fallbackEnd === -1 ? remaining : remaining.slice(0, fallbackEnd);
+      if (fallbackText.length > 0) {
+        result.push({ type: 'text', content: fallbackText });
+      }
+      remaining = fallbackEnd === -1 ? '' : remaining.slice(fallbackEnd);
+      continue;
+    }
+
+    const nextTagIndex = remaining.search(/(<bold>|<li>|<part='|\n)/);
+    if (nextTagIndex === -1) {
+      result.push({ type: 'text', content: remaining });
+      break;
+    }
+
+    if (nextTagIndex === 0) {
+      result.push({ type: 'text', content: remaining.slice(0, 1) });
+      remaining = remaining.slice(1);
+      continue;
+    }
+
+    result.push({ type: 'text', content: remaining.slice(0, nextTagIndex) });
+    remaining = remaining.slice(nextTagIndex);
+  }
+
+  return result;
+};
+
 const NewsDetail: React.FC = () => {
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
@@ -29,6 +99,17 @@ const NewsDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [, setError] = useState<string | null>(null);
   const [selectedGame, setSelectedGame] = useState<string>("all");
+  const [expandedParts, setExpandedParts] = useState<Set<number>>(new Set());
+
+  const togglePart = (idx: number) => {
+    const newExpanded = new Set(expandedParts);
+    if (newExpanded.has(idx)) {
+      newExpanded.delete(idx);
+    } else {
+      newExpanded.add(idx);
+    }
+    setExpandedParts(newExpanded);
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -80,6 +161,58 @@ const NewsDetail: React.FC = () => {
   }
 
   if (id && newsItem) {
+    const parsedContent = parseContentWithTags(newsItem.c.ko.replace(/\\n/g, "\n"));
+
+    const renderContent = () => {
+      const renderItem = (item: ParsedContent, idx: number): React.ReactNode => {
+        if (item.type === 'text') {
+          return <span key={idx}>{item.content}</span>;
+        }
+        if (item.type === 'bold') {
+          return <strong key={idx} className="font-bold text-slate-900 dark:text-white">{item.content}</strong>;
+        }
+        if (item.type === 'li') {
+          const innerContent = parseContentWithTags(item.content || '');
+          return (
+            <div key={idx} className="flex gap-2 ml-4">
+              <span className="text-indigo-600 dark:text-indigo-400">•</span>
+              <div className="flex-1">
+                {innerContent.map((innerItem, innerIdx) => renderItem(innerItem, `${idx}-${innerIdx}` as unknown as number))}
+              </div>
+            </div>
+          );
+        }
+        if (item.type === 'part') {
+          const isExpanded = expandedParts.has(idx);
+          const innerContent = parseContentWithTags(item.content || '');
+          return (
+            <div key={idx} className="mb-3 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/30 overflow-hidden">
+              <button
+                onClick={() => togglePart(idx)}
+                className="w-full flex items-center justify-between px-4 py-3 text-indigo-600 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-colors text-sm font-semibold"
+              >
+                <span>{item.label}</span>
+                <ChevronRightIcon className={`h-4 w-4 transition-transform duration-300 ${isExpanded ? 'rotate-90' : ''}`} />
+              </button>
+              {isExpanded && (
+                <div className="border-t border-indigo-200 dark:border-indigo-500/30 px-4 py-3 bg-slate-50 dark:bg-slate-900/50">
+                  <div className="space-y-2 text-sm text-slate-700 dark:text-slate-300">
+                    {innerContent.map((innerItem, innerIdx) => renderItem(innerItem, innerIdx))}
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        }
+        if (item.type === 'newline') {
+          return <br key={idx} />;
+        }
+        return null;
+      };
+
+      return parsedContent.map((item, idx) => renderItem(item, idx));
+    };
+
     return (
       <main className="container-glass smooth-scroller py-8">
         <div className="max-w-4xl px-4 py-12 mx-auto sm:px-6 lg:px-8 animate-fade-in-up">
@@ -111,10 +244,10 @@ const NewsDetail: React.FC = () => {
 
           {/* Content Section */}
           <div className="p-10 md:p-14">
-            <div className="prose prose-lg dark:prose-invert max-w-none prose-headings:font-black prose-headings:tracking-tight prose-p:leading-relaxed">
-              <p className="leading-[1.8] text-slate-700 dark:text-slate-300 whitespace-pre-line font-light text-lg">
-                {newsItem.c.ko.replace(/\\n/g, "\n")}
-              </p>
+            <div className="prose prose-lg dark:prose-invert max-w-none prose-headings:font-black prose-headings:tracking-tight prose-p:leading-relaxed space-y-2">
+              <div className="leading-[1.8] text-slate-700 dark:text-slate-300 font-light text-lg space-y-2">
+                {renderContent()}
+              </div>
             </div>
 
             <div className="pt-8 mt-16 border-t border-slate-100 dark:border-white/10">
