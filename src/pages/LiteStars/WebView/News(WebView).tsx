@@ -12,6 +12,7 @@ import { Helmet } from "react-helmet-async";
 
 
 const apiBaseUrl = `${process.env.PUBLIC_URL || ""}/api`;
+const REDIRECT_URL = "https://mindevxwebview.pages.dev/LiteStars/News/News";
 
 interface NewsItem {
   id: number;
@@ -97,6 +98,11 @@ const parseContentWithTags = (text: string): ParsedContent[] => {
 
 const NewsWebView: React.FC = () => {
   const navigate = useNavigate();
+  useEffect(() => {
+    if (window.location.href !== REDIRECT_URL) {
+      window.location.replace(REDIRECT_URL);
+    }
+  }, []);
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
   const [newsList, setNewsList] = useState<NewsItem[]>([]);
@@ -175,6 +181,9 @@ const NewsWebView: React.FC = () => {
     }
   }
 
+  if (window.location.href !== REDIRECT_URL) {
+    return null;
+  }
   // 1. 로딩 화면 (패딩 최적화)
   if (loading) {
     return (
