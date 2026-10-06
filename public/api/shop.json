@@ -13,7 +13,7 @@
         "NanoGas": {"Quantity": 1000},
         "NanoGem": {"Quantity": 19},
         "NanoPower": {"Quantity": 10000},
-        "NanoCoin": {"Quantity": 10000},
+        "NanoCoin": {"Quantity": 10000}
       }
     },
     {
