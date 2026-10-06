@@ -2,14 +2,33 @@
   "list": [
     {
       "id": "Beginner_Package_001",
-      "title": { "ko": "초보자 패키지1"},
-      "desc": { "ko": "토마토 5개와 당근 5개"},
-      "start": "2025-11-02",
-      "end": "2029-11-02",
+      "title": { "ko": "업데이트 보상"},
+      "desc": { "ko": "1.0.0 업데이트 보상"},
+      "start": "2026-10-02",
+      "end": "2028-01-01",
       "cost": {},
+      "category":"General",
       "reward": {
-        "fridge": []
+        "LiteDrop": {"Grade": 0, "Quantity": 10},
+        "NanoGas": {"Quantity": 1000},
+        "NanoGem": {"Quantity": 19},
+        "NanoPower": {"Quantity": 10000},
+        "NanoCoin": {"Quantity": 10000},
       }
-    }
+    },
+    {
+      "id": "NEW_LITER_STARMAN1",
+      "title": { "ko": "신규 라이터!"},
+      "desc": { "ko": "신규 라이터, STARMAN을 획득하세요!"},
+      "start": "2026-10-02",
+      "end": "2027-02-01",
+      "cost": {
+        "NanoGem": {"Quantity": 19}
+      },
+      "category":"General",
+      "reward": {
+        "Liter": {"LiterNumber": 2, "Level": 1}
+      }
+    },
   ]
 }
